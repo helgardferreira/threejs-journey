@@ -1,7 +1,7 @@
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+const CopyWebpackPlugin = require("copy-webpack-plugin");
 const portFinderSync = require("portfinder-sync");
 const path = require("path");
-const HtmlWebpackPlugin = require("html-webpack-plugin");
-
 const toml = require("toml");
 const yaml = require("yamljs");
 const json5 = require("json5");
@@ -89,6 +89,13 @@ module.exports = {
     ],
   },
   plugins: [
+    new CopyWebpackPlugin({
+      patterns: [
+        {
+          from: path.resolve(__dirname, "../static"),
+        },
+      ],
+    }),
     new HtmlWebpackPlugin({
       template: "./src/index.html",
       filename: "index.html",
