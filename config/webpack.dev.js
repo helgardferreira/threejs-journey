@@ -1,3 +1,4 @@
+const portFinderSync = require("portfinder-sync");
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 
@@ -22,9 +23,13 @@ module.exports = {
   // Recommended choice for development builds with high quality SourceMaps.
   devtool: "eval-source-map",
   devServer: {
+    port: portFinderSync.getPort(3000),
     static: path.join(__dirname, "../build"),
+    open: true,
     compress: true,
-    port: 3000,
+    client: {
+      overlay: true,
+    },
   },
   module: {
     rules: [
@@ -39,6 +44,10 @@ module.exports = {
       {
         test: /\.css$/i,
         use: ["style-loader", "css-loader"],
+      },
+      {
+        test: /\.html$/,
+        use: ["html-loader"],
       },
       {
         test: /\.(png|svg|jpg|jpeg|gif)$/i,
