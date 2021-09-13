@@ -1,4 +1,3 @@
 import "./index.css";
-import basics from "./basics";
-
-basics();
+// import "./basics/transforms";
+import "./basics/animations";

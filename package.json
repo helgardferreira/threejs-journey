@@ -13,6 +13,7 @@
   "dependencies": {
     "@babel/polyfill": "^7.12.1",
     "core-js": "3.8.x",
+    "gsap": "3.5.x",
     "three": "^0.132.2"
   },
   "devDependencies": {
