@@ -101,7 +101,7 @@ const renderAnimation = () => {
   // Render
   renderer.render(scene, camera);
 
-  // Call tick again on the next frame
+  // Call renderAnimation again on the next frame
   window.requestAnimationFrame(renderAnimation);
 };
 
