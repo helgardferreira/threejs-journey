@@ -24,8 +24,10 @@ module.exports = {
   devtool: "eval-source-map",
   devServer: {
     port: portFinderSync.getPort(3000),
-    static: path.join(__dirname, "../build"),
     open: true,
+    /* static: {
+      directory: path.join(__dirname, "../static"),
+    }, */
     compress: true,
     client: {
       overlay: true,
