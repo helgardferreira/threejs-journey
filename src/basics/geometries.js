@@ -9,7 +9,7 @@ const canvas = createCanvas();
 // Scene
 const scene = new THREE.Scene();
 
-// Red cube
+// Geometry
 // const geometry = new THREE.BoxGeometry(1, 1, 1, 4, 4, 4);
 
 // Time to create our own geometry:

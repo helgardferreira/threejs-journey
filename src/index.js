@@ -3,4 +3,5 @@ import "./index.css";
 // import "./basics/animations";
 // import "./basics/cameras";
 // import "./basics/fullscreen";
-import "./basics/geometries";
+// import "./basics/geometries";
+import "./basics/debugUi";
