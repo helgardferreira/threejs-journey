@@ -5,7 +5,8 @@
 
 html,
 body {
-  background-color: #1f2937;
+  background-color: white;
+  /*background-color: #1f2937;*/
   overflow: hidden;
 }
 

@@ -12,9 +12,11 @@
   "license": "MIT",
   "dependencies": {
     "@babel/polyfill": "^7.12.1",
+    "@types/stats": "^0.16.30",
     "core-js": "3.8.x",
     "dat.gui": "^0.7.7",
     "gsap": "3.5.x",
+    "stats.js": "^0.17.0",
     "three": "^0.132.2"
   },
   "devDependencies": {

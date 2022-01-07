@@ -6,4 +6,5 @@ import "./index.css";
 // import "./basics/geometries";
 // import "./basics/debugUi";
 // import "./basics/textures";
-import "./basics/materials";
+// import "./basics/materials";
+import "./experiments/globe";
