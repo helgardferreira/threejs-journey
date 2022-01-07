@@ -18,26 +18,7 @@ const canvas = createCanvas();
 // Scene
 const scene = new THREE.Scene();
 
-/**
- * Helpers
- */
-// const axesHelper = new THREE.AxesHelper(100);
-// scene.add(axesHelper);
-
-/**
- * Textures
- */
-const loadingManager = new THREE.LoadingManager();
-const textureLoader = new THREE.TextureLoader(loadingManager);
-
-const mapTexture = textureLoader.load("/textures/map.png");
-
-/**
- * Objects
- */
-// const mapMaterial = new THREE.MeshBasicMaterial({map: mapTexture});
-
-// Sphere
+// Globe
 const GLOBE_RADIUS = 1;
 const globeSphere = new THREE.Mesh(
   new THREE.SphereGeometry(GLOBE_RADIUS, 64, 64),
@@ -49,32 +30,53 @@ const globeSphere = new THREE.Mesh(
   // mapMaterial,
 );
 
-/**
- * HTML Canvas Image Manipulation Logic
- */
-// Create a canvas element
-const imageCanvas = document.createElement('canvas');
-imageCanvas.width = 400;
-imageCanvas.height = 200;
+class HeroGlobe {
+  dotRadius = (2 * Math.PI * GLOBE_RADIUS) / 1500;
+  rows = 180;
+  dotDensity = 100;
+  dotMatrices = [];
+  position = new THREE.Vector3();
+  rotation = new THREE.Euler();
+  quaternion = new THREE.Quaternion();
+  scale = new THREE.Vector3(1, 1, 1);
+  group = new THREE.Group();
+  imageData;
 
-// Get the drawing context
-const imageCtx = imageCanvas.getContext('2d');
+  /**
+   * HTML Canvas Image Manipulation Logic
+   */
+  initImageData = () => {
+    return new Promise((resolve, reject) => {
+      try {
+        // Create a canvas element
+        const imageCanvas = document.createElement('canvas');
+        imageCanvas.width = 400;
+        imageCanvas.height = 200;
 
-// Create a new Image instance
-const img = new Image();
-img.crossOrigin = 'anonymous';
-img.src = '/textures/map.png';
-let imageData;
-img.onload = function () {
-  imageCtx.drawImage(img, 0, 0);
-  img.style.display = 'none';
+        // Get the drawing context
+        const imageCtx = imageCanvas.getContext('2d');
 
-  imageData = imageCtx.getImageData(0, 0, 400, 200);
-  console.log(imageData)
-};
+        // Create a new Image instance
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.src = '/textures/map.png';
+        img.onload = () => {
+          imageCtx.drawImage(img, 0, 0);
+          img.style.display = 'none';
 
-setTimeout(() => {
-  function isDotVisible(lat, long) {
+          this.imageData = imageCtx.getImageData(0, 0, 400, 200);
+          resolve();
+        };
+      } catch (err) {
+        reject(err);
+      }
+    })
+  }
+
+  /**
+   * Equirectangular map image processing
+   */
+  isDotVisible = (lat, long) => {
     // 400 = map width
     // 200 = map height
     const x = ((long + 180) * (400 / 360));
@@ -82,170 +84,171 @@ setTimeout(() => {
 
     // 400 = image width
     const index = (Math.floor(x) + Math.floor(y) * 400) * 4;
-    const alpha = imageData.data[index + 3]
+    const alpha = this.imageData.data[index + 3]
     return alpha >= 90;
   }
 
   /**
    * Region Plotting Logic
    */
-  const dotRadius = (2 * Math.PI * GLOBE_RADIUS) / 1500;
-  const rows = 180;
-  const dotDensity = 100;
-  const dotMatrices = [];
+  plotGlobe = async () => {
+    await this.initImageData();
 
-  const position = new THREE.Vector3();
-  const rotation = new THREE.Euler();
-  const quaternion = new THREE.Quaternion();
-  const scale = new THREE.Vector3(1, 1, 1);
+    for (let lat = -90; lat <= 90; lat += 180 / this.rows) {
+      const radius = Math.cos(Math.abs(lat) * DEG2RAD) * GLOBE_RADIUS;
+      const circumference = radius * Math.PI * 2;
+      const dotsForLat = circumference * this.dotDensity;
 
-  for (let lat = -90; lat <= 90; lat += 180 / rows) {
-    const radius = Math.cos(Math.abs(lat) * DEG2RAD) * GLOBE_RADIUS;
-    const circumference = radius * Math.PI * 2;
-    const dotsForLat = circumference * dotDensity;
+      for (let x = 0; x < dotsForLat; x++) {
+        const long = -180 + x * 360 / dotsForLat;
 
-    for (let x = 0; x < dotsForLat; x++) {
-      const long = -180 + x * 360 / dotsForLat;
+        if (!this.isDotVisible(lat, long)) {
+          continue;
+        }
 
-      if (!isDotVisible(lat, long)) {
-        continue;
+        // Alternative x,y,z calculation
+        const phi = (90 - lat) * DEG2RAD;
+        const theta = (long + 180) * DEG2RAD;
+
+        this.position.x = -(GLOBE_RADIUS * Math.sin(phi) * Math.cos(theta));
+        this.position.z = (GLOBE_RADIUS * Math.sin(phi) * Math.sin(theta));
+        this.position.y = (GLOBE_RADIUS * Math.cos(phi));
+
+        this.rotation.x = 0;
+        this.rotation.y = 0;
+        this.rotation.z = 0;
+
+        this.quaternion.setFromEuler(this.rotation);
+
+        const matrix = new THREE.Matrix4();
+        matrix.compose(
+          this.position, this.quaternion, this.scale
+        )
+        matrix.lookAt(this.position, new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 1, 0));
+
+        this.dotMatrices.push(matrix);
       }
-
-      // Alternative x,y,z calculation
-      const phi = (90 - lat) * DEG2RAD;
-      const theta = (long + 180) * DEG2RAD;
-
-      position.x = -(GLOBE_RADIUS * Math.sin(phi) * Math.cos(theta));
-      position.z = (GLOBE_RADIUS * Math.sin(phi) * Math.sin(theta));
-      position.y = (GLOBE_RADIUS * Math.cos(phi));
-
-      rotation.x = 0;
-      rotation.y = 0;
-      rotation.z = 0;
-
-      quaternion.setFromEuler(rotation);
-
-      const matrix = new THREE.Matrix4();
-      matrix.compose(
-        position, quaternion, scale
-      )
-      matrix.lookAt(position, new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 1, 0));
-
-      dotMatrices.push(matrix);
     }
   }
 
   /**
    * Region Dot Rendering
    */
-  const circleGeometry = new THREE.CircleGeometry(dotRadius, 5);
-  const circleMaterial = new THREE.MeshBasicMaterial({color: 0x376FFF});
+  renderGlobe = async () => {
+    await this.plotGlobe();
 
-  // TODO: Remove later for performance reasons
-  circleMaterial.side = THREE.DoubleSide;
-  // circleMaterial.side = THREE.BackSide;
+    const circleGeometry = new THREE.CircleGeometry(this.dotRadius, 5);
+    const circleMaterial = new THREE.MeshBasicMaterial({color: 0x376FFF});
 
-  // We make use of instanced mesh here for performance reasons
-  const dotMesh = new THREE.InstancedMesh(circleGeometry, circleMaterial, dotMatrices.length);
+    // TODO: Remove later for performance reasons
+    circleMaterial.side = THREE.DoubleSide;
 
-  dotMatrices.forEach((dotMatrix, i, arr) => {
-    dotMesh.setMatrixAt(i, dotMatrix);
-  })
+    // We make use of instanced mesh here for performance reasons
+    const dotMesh = new THREE.InstancedMesh(circleGeometry, circleMaterial, this.dotMatrices.length);
 
-  /**
-   * Globe Group
-   */
-  const heroGlobe = new THREE.Group();
-  heroGlobe.add(globeSphere);
-  heroGlobe.add(dotMesh);
-  heroGlobe.rotation.y = 255 * DEG2RAD;
-  scene.add(heroGlobe);
+    this.dotMatrices.forEach((dotMatrix, i) => {
+      dotMesh.setMatrixAt(i, dotMatrix);
+    })
 
-  /**
-   * Lights
-   */
-  const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-  scene.add(ambientLight);
+    this.group.add(globeSphere);
+    this.group.add(dotMesh);
+    this.group.rotation.y = 255 * DEG2RAD;
+  }
+}
 
-  const pointLight = new THREE.PointLight(0xffffff, 0.5);
-  pointLight.position.x = 2;
-  pointLight.position.y = 2;
-  pointLight.position.z = 2;
-  scene.add(pointLight);
+function renderScene() {
+  const heroGlobe = new HeroGlobe();
+  heroGlobe.renderGlobe().then(() => {
+    scene.add(heroGlobe.group);
 
-  /**
-   * Sizes
-   */
-  const sizes = {
-    width: window.innerWidth,
-    height: window.innerHeight,
-  };
+    /**
+     * Lights
+     */
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+    scene.add(ambientLight);
 
-  /**
-   * Camera
-   */
-    // Base camera
-  const camera = new THREE.PerspectiveCamera(
-      75,
-      sizes.width / sizes.height,
-      0.1,
-      100
-    );
-  camera.position.x = 0;
-  camera.position.y = 0;
-  camera.position.z = 2;
-  scene.add(camera);
+    const pointLight = new THREE.PointLight(0xffffff, 0.5);
+    pointLight.position.x = 2;
+    pointLight.position.y = 2;
+    pointLight.position.z = 2;
+    scene.add(pointLight);
 
-  // Controls
-  const controls = new OrbitControls(camera, canvas);
-  controls.enableDamping = true;
+    /**
+     * Sizes
+     */
+    const sizes = {
+      width: window.innerWidth,
+      height: window.innerHeight,
+    };
 
-  /**
-   * Renderer
-   */
-  const renderer = new THREE.WebGLRenderer({canvas: canvas, alpha: true});
-  renderer.setSize(sizes.width, sizes.height);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    /**
+     * Camera
+     */
+      // Base camera
+    const camera = new THREE.PerspectiveCamera(
+        75,
+        sizes.width / sizes.height,
+        0.1,
+        100
+      );
+    camera.position.x = 0;
+    camera.position.y = 0;
+    camera.position.z = 2;
+    scene.add(camera);
 
-  /**
-   * Animate
-   */
-  const clock = new THREE.Clock();
+    // Controls
+    const controls = new OrbitControls(camera, canvas);
+    controls.enableDamping = true;
 
-  window.addEventListener("resize", () => {
-    // Update sizes
-    sizes.width = window.innerWidth;
-    sizes.height = window.innerHeight;
-
-    // Update camera
-    camera.aspect = sizes.width / sizes.height;
-    camera.updateProjectionMatrix();
-
-    // Update renderer
+    /**
+     * Renderer
+     */
+    const renderer = new THREE.WebGLRenderer({canvas: canvas, alpha: true});
     renderer.setSize(sizes.width, sizes.height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  });
 
-  const renderAnimation = () => {
-    // WebGL Stats
-    fpsStats.begin();
+    /**
+     * Animate
+     */
+    const clock = new THREE.Clock();
 
-    const elapsedTime = clock.getElapsedTime();
+    window.addEventListener("resize", () => {
+      // Update sizes
+      sizes.width = window.innerWidth;
+      sizes.height = window.innerHeight;
 
-    // heroGlobe.rotateY(0.5 * DEG2RAD)
+      // Update camera
+      camera.aspect = sizes.width / sizes.height;
+      camera.updateProjectionMatrix();
 
-    // Update controls
-    controls.update();
+      // Update renderer
+      renderer.setSize(sizes.width, sizes.height);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    });
 
-    // Render
-    renderer.render(scene, camera);
+    const renderAnimation = () => {
+      // WebGL Stats
+      fpsStats.begin();
 
-    fpsStats.end();
+      // const elapsedTime = clock.getElapsedTime();
 
-    // Call renderAnimation again on the next frame
-    window.requestAnimationFrame(renderAnimation);
-  };
+      // Bind animation to elapsedTime to reduce FPS inconsistencies
+      heroGlobe.group.rotateY(0.5 * DEG2RAD)
 
-  renderAnimation();
-}, 200)
+      // Update controls
+      controls.update();
 
+      // Render
+      renderer.render(scene, camera);
+
+      fpsStats.end();
+
+      // Call renderAnimation again on the next frame
+      window.requestAnimationFrame(renderAnimation);
+    };
+
+    renderAnimation();
+  })
+}
+
+renderScene();
