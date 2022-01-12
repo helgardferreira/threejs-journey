@@ -4,7 +4,6 @@ import * as THREE from "three";
 import {OrbitControls} from "three/examples/jsm/controls/OrbitControls.js";
 import createCanvas from "../createCanvas";
 import {DEG2RAD} from "three/src/math/MathUtils";
-import {MeshBasicMaterial} from "three";
 import Stats from 'stats.js'
 
 class HeroGlobe {
@@ -133,7 +132,7 @@ class HeroGlobe {
     });
 
     circleMaterial.onBeforeCompile = function (material) {
-      const fadeThreshold = '0.2';
+      const fadeThreshold = '1000.0';
       const alphaFallOff = '15.0';
 
       material.fragmentShader = material.fragmentShader.replace(
@@ -154,7 +153,7 @@ class HeroGlobe {
     }
 
     // TODO: Remove later for performance reasons
-    // circleMaterial.side = THREE.DoubleSide;
+    circleMaterial.side = THREE.DoubleSide;
 
     // We make use of instanced mesh here for performance reasons
     const dotMesh = new THREE.InstancedMesh(circleGeometry, circleMaterial, this.dotMatrices.length);
@@ -166,11 +165,11 @@ class HeroGlobe {
     // Globe Sphere
     const globeSphere = new THREE.Mesh(
       new THREE.SphereGeometry(this.globeRadius, 64, 64),
-      new MeshBasicMaterial({
+      new THREE.MeshBasicMaterial({
         // opacity: 0,
         // opacity: 0.05,
-        // opacity: 0.5,
-        opacity: 1,
+        opacity: 0.5,
+        // opacity: 1,
         transparent: true,
         color: 0x0B122E,
       })
@@ -203,10 +202,10 @@ function renderScene() {
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
     scene.add(ambientLight);
 
-    const pointLight = new THREE.PointLight(0xffffff, 0.5);
-    pointLight.position.x = 2;
-    pointLight.position.y = 2;
-    pointLight.position.z = 2;
+    const pointLight = new THREE.PointLight(0xffffff, 5);
+    pointLight.position.x = 0;
+    pointLight.position.y = 0;
+    pointLight.position.z = 10;
     scene.add(pointLight);
 
     /**
@@ -219,20 +218,23 @@ function renderScene() {
     /**
      * Camera
      */
+    /**
+     * Camera
+     */
     const camera = new THREE.PerspectiveCamera(
-      30,
+      20,
       sizes.width / sizes.height,
-      0.1,
-      100
+      7,
+      10
     );
     camera.position.x = 0;
-    camera.position.y = 1;
-    camera.position.z = 5;
+    camera.position.y = 0;
+    camera.position.z = 8;
     scene.add(camera);
 
     // Controls
-    const controls = new OrbitControls(camera, canvas);
-    controls.enableDamping = true;
+    // const controls = new OrbitControls(camera, canvas);
+    // controls.enableDamping = true;
 
     /**
      * Renderer
@@ -270,7 +272,7 @@ function renderScene() {
       heroGlobe.group.rotateY(0.05 * DEG2RAD);
 
       // Update controls
-      controls.update();
+      // controls.update();
 
       // Render
       renderer.render(scene, camera);
