@@ -142,8 +142,8 @@ class HeroGlobe {
       new MeshBasicMaterial({
         // opacity: 0,
         // opacity: 0.05,
-        // opacity: 0.5,
-        opacity: 1,
+        opacity: 0.5,
+        // opacity: 1,
         transparent: true,
         color: 0x0B122E,
       })
@@ -193,14 +193,14 @@ function renderScene() {
      * Camera
      */
     const camera = new THREE.PerspectiveCamera(
-      30,
+      20,
       sizes.width / sizes.height,
-      0.1,
-      100
+      7,
+      10
     );
     camera.position.x = 0;
-    camera.position.y = 1;
-    camera.position.z = 5;
+    camera.position.y = 0;
+    camera.position.z = 8;
     scene.add(camera);
 
     // Controls
