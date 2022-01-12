@@ -4,8 +4,19 @@ import * as THREE from "three";
 import {OrbitControls} from "three/examples/jsm/controls/OrbitControls.js";
 import createCanvas from "../createCanvas";
 import {DEG2RAD} from "three/src/math/MathUtils";
-import {MeshBasicMaterial} from "three";
 import Stats from 'stats.js'
+import * as dat from "dat.gui";
+
+/**
+ * Debug
+ */
+const gui = new dat.GUI({width: 400});
+
+/**
+ * Base
+ */
+const canvas = createCanvas();
+const scene = new THREE.Scene();
 
 class HeroGlobe {
   globeRadius = 1;
@@ -17,12 +28,16 @@ class HeroGlobe {
   // rows = 360;
   dotDensity = 60;
   dotMatrices = [];
-  position = new THREE.Vector3();
-  rotation = new THREE.Euler();
-  quaternion = new THREE.Quaternion();
-  scale = new THREE.Vector3(1, 1, 1);
+  object = new THREE.Object3D();
   group = new THREE.Group();
   map = {};
+  colors = {
+    glow: 0x1c2462,
+    dot: 0x376FFF,
+    spotLight1: 0x2188ff,
+    spotLight2: 0xf46bbe,
+    directionalLight: 0xa9bfff,
+  }
 
   /**
    * HTML Canvas Image Manipulation Logic
@@ -72,6 +87,17 @@ class HeroGlobe {
     return alpha > 90;
   }
 
+  latLongToVec3 = (lat, long, radius) => {
+    const phi = (90 - lat) * DEG2RAD;
+    const theta = (long + 180) * DEG2RAD;
+
+    return [
+      radius * Math.sin(phi) * Math.cos(theta) * -1,
+      radius * Math.cos(phi),
+      radius * Math.sin(phi) * Math.sin(theta),
+    ]
+  }
+
   /**
    * Region Plotting Logic
    */
@@ -90,27 +116,31 @@ class HeroGlobe {
           continue;
         }
 
-        // Alternative x,y,z calculation
-        const phi = (90 - lat) * DEG2RAD;
-        const theta = (long + 180) * DEG2RAD;
+        const positions = this.latLongToVec3(lat, long, this.globeRadius);
 
-        this.position.x = -(this.globeRadius * Math.sin(phi) * Math.cos(theta));
-        this.position.z = (this.globeRadius * Math.sin(phi) * Math.sin(theta));
-        this.position.y = (this.globeRadius * Math.cos(phi));
+        this.object.position.set(positions[0], positions[1], positions[2]);
 
-        this.rotation.x = 0;
-        this.rotation.y = 0;
-        this.rotation.z = 0;
+        // Alternate method for creating "dot" matrix
+        // this.position.set();
+        //
+        // this.rotation.x = 0;
+        // this.rotation.y = 0;
+        // this.rotation.z = 0;
+        //
+        // this.quaternion.setFromEuler(this.rotation);
+        //
+        // const matrix = new THREE.Matrix4();
+        // matrix.compose(this.position, this.quaternion, this.scale)
+        // matrix.lookAt(
+        //   this.position,
+        //   new THREE.Vector3(0, 0, 0),
+        //   new THREE.Vector3(0, 1, 0)
+        // );
 
-        this.quaternion.setFromEuler(this.rotation);
-
-        const matrix = new THREE.Matrix4();
-        matrix.compose(this.position, this.quaternion, this.scale)
-        matrix.lookAt(
-          this.position,
-          new THREE.Vector3(0, 0, 0),
-          new THREE.Vector3(0, 1, 0)
-        );
+        const lookAtPositions = this.latLongToVec3(lat, long, this.globeRadius + 5);
+        this.object.lookAt(lookAtPositions[0], lookAtPositions[1], lookAtPositions[2]);
+        this.object.updateMatrix();
+        const matrix = this.object.matrix.clone();
 
         this.dotMatrices.push(matrix);
       }
@@ -124,10 +154,48 @@ class HeroGlobe {
     await this.plotGlobe();
 
     const circleGeometry = new THREE.CircleGeometry(this.dotRadius, 5);
-    const circleMaterial = new THREE.MeshBasicMaterial({color: 0x376FFF});
+    // const circleMaterial = new THREE.MeshBasicMaterial({color: 0x376FFF});
+
+    const circleMaterial = new THREE.MeshStandardMaterial({
+      color: this.colors.dot,
+      metalness: 1,
+      roughness: 0.9,
+      transparent: true,
+      alphaTest: .02
+    });
+
+    gui.addColor(this.colors, "dot").name("dotColor").onChange((value) => circleMaterial.color.set(value));
+
+    circleMaterial.onBeforeCompile = function (material) {
+      const fadeThreshold = '0.2';
+      const alphaFallOff = '15.0';
+
+      material.fragmentShader = material.fragmentShader.replace(
+        "#include <output_fragment>",
+        `
+          #ifdef OPAQUE
+          diffuseColor.a = 1.0;
+          #endif
+          #ifdef USE_TRANSMISSION
+          diffuseColor.a *= transmissionAlpha + 0.1;
+          #endif
+          gl_FragColor = vec4( outgoingLight, diffuseColor.a );
+          if (gl_FragCoord.z > ${fadeThreshold}) {
+            gl_FragColor.a = 1.0 + ( ${fadeThreshold} - gl_FragCoord.z ) * ${alphaFallOff};
+          }
+        `
+      )
+      // material.fragmentShader = material.fragmentShader.replace(
+      //   "gl_FragColor = vec4( outgoingLight, diffuseColor.a );", `
+      //   gl_FragColor = vec4( outgoingLight, diffuseColor.a );
+      //   if (gl_FragCoord.z > 0.51) {
+      //     gl_FragColor.a = 1.0 + ( 0.51 - gl_FragCoord.z ) * 17.0;
+      //   }
+      // `)
+    }
 
     // TODO: Remove later for performance reasons
-    circleMaterial.side = THREE.DoubleSide;
+    // circleMaterial.side = THREE.DoubleSide;
 
     // We make use of instanced mesh here for performance reasons
     const dotMesh = new THREE.InstancedMesh(circleGeometry, circleMaterial, this.dotMatrices.length);
@@ -135,23 +203,152 @@ class HeroGlobe {
     this.dotMatrices.forEach((dotMatrix, i) => {
       dotMesh.setMatrixAt(i, dotMatrix);
     })
+    dotMesh.renderOrder = 3;
 
     // Globe Sphere
     const globeSphere = new THREE.Mesh(
       new THREE.SphereGeometry(this.globeRadius, 64, 64),
-      new MeshBasicMaterial({
+      new THREE.MeshStandardMaterial({
         // opacity: 0,
         // opacity: 0.05,
         // opacity: 0.5,
-        opacity: 1,
-        transparent: true,
+        // transparent: true,
         color: 0x0B122E,
+        metalness: 0,
+        roughness: .9
       })
     );
+
+    const haloSphere = new THREE.Mesh(
+      new THREE.SphereGeometry(this.globeRadius, 45, 45),
+      new THREE.ShaderMaterial({
+        uniforms: {
+          c: {
+            type: "f",
+            value: .7,
+          },
+          p: {
+            type: "f",
+            value: 15,
+          },
+          glowColor: {
+            type: "c",
+            value: new THREE.Color(this.colors.glow),
+          },
+          viewVector: {
+            type: "v3",
+            value: new THREE.Vector3(0, 0, 220),
+          }
+        },
+        vertexShader: `
+          uniform vec3 viewVector;
+          uniform float c;
+          uniform float p;
+          varying float intensity;
+          varying float intensityA;
+          void main() 
+          {
+            vec3 vNormal = normalize( normalMatrix * normal );
+            vec3 vNormel = normalize( normalMatrix * viewVector );
+            intensity = pow( c - dot(vNormal, vNormel), p );
+            intensityA = pow( 0.63 - dot(vNormal, vNormel), p );
+            
+            gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+          }`,
+        fragmentShader: `
+          uniform vec3 glowColor;
+          varying float intensity;
+          varying float intensityA;
+          void main()
+          {
+            gl_FragColor = vec4( glowColor * intensity, 1.0 * intensityA );
+          }`,
+        side: 1,
+        blending: 2,
+        transparent: true,
+        dithering: true,
+      })
+    )
+
+    gui.addColor(this.colors, "glow").name("glowColor").onChange(
+      (value) => haloSphere.material.uniforms.glowColor.value.set(value)
+    );
+
+    haloSphere.scale.multiplyScalar(1.15);
+    haloSphere.rotateX(4 * DEG2RAD);
+    haloSphere.rotateY(4 * DEG2RAD);
+    haloSphere.renderOrder = 3;
+
+    scene.add(haloSphere);
 
     this.group.add(globeSphere);
     this.group.add(dotMesh);
     this.group.rotation.y = 255 * DEG2RAD;
+
+    this.renderLights();
+  }
+
+  addLightGui = (light, name) => {
+    const lightGui = gui.addFolder(name);
+    lightGui.open();
+    lightGui.addColor(
+      this.colors, name
+    ).onChange((value) => light.color.set(value));
+    lightGui.add(light.position, "x").min(-10).max(10).step(0.01);
+    lightGui.add(light.position, "y").min(-10).max(10).step(0.01);
+    lightGui.add(light.position, "z").min(-10).max(10).step(0.01);
+  }
+
+  /**
+   * Lights
+   */
+  renderLights = () => {
+    const spotLight1 = new THREE.SpotLight(
+      this.colors.spotLight1,
+      12,
+      120,
+      .3,
+      0,
+      1.1,
+    );
+    const spotLight2 = new THREE.SpotLight(
+      this.colors.spotLight2,
+      5,
+      75,
+      .5,
+      0,
+      1.25,
+    );
+    const directionalLight = new THREE.DirectionalLight(
+      this.colors.directionalLight,
+      3,
+    );
+
+    spotLight1.target = this.group;
+    spotLight2.target = this.group;
+    directionalLight.target = this.group;
+
+    spotLight1.position.set(
+      this.group.position.x - 2.5 * this.globeRadius,
+      8,
+      -4,
+    );
+    directionalLight.position.set(
+      this.group.position.x - 5,
+      this.group.position.y + 3,
+      1,
+    );
+    spotLight2.position.set(
+      this.group.position.x + this.globeRadius,
+      this.globeRadius,
+      2 * this.globeRadius,
+    );
+
+    this.addLightGui(spotLight1, "spotLight1");
+    this.addLightGui(spotLight1, "spotLight2");
+    this.addLightGui(spotLight1, "directionalLight");
+
+    scene.add(spotLight1, spotLight2, directionalLight);
   }
 }
 
@@ -160,27 +357,9 @@ function renderScene() {
   fpsStats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
   document.body.appendChild(fpsStats.dom);
 
-  /**
-   * Base
-   */
-  const canvas = createCanvas();
-  const scene = new THREE.Scene();
-
   const heroGlobe = new HeroGlobe();
   heroGlobe.renderGlobe().then(() => {
     scene.add(heroGlobe.group);
-
-    /**
-     * Lights
-     */
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-    scene.add(ambientLight);
-
-    const pointLight = new THREE.PointLight(0xffffff, 0.5);
-    pointLight.position.x = 2;
-    pointLight.position.y = 2;
-    pointLight.position.z = 2;
-    scene.add(pointLight);
 
     /**
      * Sizes
@@ -193,19 +372,19 @@ function renderScene() {
      * Camera
      */
     const camera = new THREE.PerspectiveCamera(
-      30,
+      20,
       sizes.width / sizes.height,
-      0.1,
-      100
+      7,
+      10
     );
     camera.position.x = 0;
-    camera.position.y = 1;
-    camera.position.z = 5;
+    camera.position.y = 0;
+    camera.position.z = 8;
     scene.add(camera);
 
     // Controls
-    const controls = new OrbitControls(camera, canvas);
-    controls.enableDamping = true;
+    // const controls = new OrbitControls(camera, canvas);
+    // controls.enableDamping = true;
 
     /**
      * Renderer
@@ -243,7 +422,7 @@ function renderScene() {
       heroGlobe.group.rotateY(0.05 * DEG2RAD);
 
       // Update controls
-      controls.update();
+      // controls.update();
 
       // Render
       renderer.render(scene, camera);
