@@ -124,10 +124,37 @@ class HeroGlobe {
     await this.plotGlobe();
 
     const circleGeometry = new THREE.CircleGeometry(this.dotRadius, 5);
-    const circleMaterial = new THREE.MeshBasicMaterial({color: 0x376FFF});
+    const circleMaterial = new THREE.MeshStandardMaterial({
+      color: 0x376FFF,
+      metalness: 1,
+      roughness: 0.9,
+      transparent: true,
+      alphaTest: .02
+    });
+
+    circleMaterial.onBeforeCompile = function (material) {
+      const fadeThreshold = '0.2';
+      const alphaFallOff = '15.0';
+
+      material.fragmentShader = material.fragmentShader.replace(
+        "#include <output_fragment>",
+        `
+          #ifdef OPAQUE
+          diffuseColor.a = 1.0;
+          #endif
+          #ifdef USE_TRANSMISSION
+          diffuseColor.a *= transmissionAlpha + 0.1;
+          #endif
+          gl_FragColor = vec4( outgoingLight, diffuseColor.a );
+          if (gl_FragCoord.z > ${fadeThreshold}) {
+            gl_FragColor.a = 1.0 + ( ${fadeThreshold} - gl_FragCoord.z ) * ${alphaFallOff};
+          }
+        `
+      )
+    }
 
     // TODO: Remove later for performance reasons
-    circleMaterial.side = THREE.DoubleSide;
+    // circleMaterial.side = THREE.DoubleSide;
 
     // We make use of instanced mesh here for performance reasons
     const dotMesh = new THREE.InstancedMesh(circleGeometry, circleMaterial, this.dotMatrices.length);
