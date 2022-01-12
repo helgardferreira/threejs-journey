@@ -34,6 +34,7 @@ class HeroGlobe {
   colors = {
     glow: 0x1c2462,
     dot: 0x376FFF,
+    globe: 0x0B122E,
     spotLight1: 0x2188ff,
     spotLight2: 0xf46bbe,
     directionalLight: 0xa9bfff,
@@ -164,8 +165,6 @@ class HeroGlobe {
       alphaTest: .02
     });
 
-    gui.addColor(this.colors, "dot").name("dotColor").onChange((value) => circleMaterial.color.set(value));
-
     circleMaterial.onBeforeCompile = function (material) {
       const fadeThreshold = '0.2';
       const alphaFallOff = '15.0';
@@ -213,7 +212,7 @@ class HeroGlobe {
         // opacity: 0.05,
         // opacity: 0.5,
         // transparent: true,
-        color: 0x0B122E,
+        color: this.colors.globe,
         metalness: 0,
         roughness: .9
       })
@@ -270,14 +269,45 @@ class HeroGlobe {
       })
     )
 
-    gui.addColor(this.colors, "glow").name("glowColor").onChange(
-      (value) => haloSphere.material.uniforms.glowColor.value.set(value)
-    );
-
     haloSphere.scale.multiplyScalar(1.15);
     haloSphere.rotateX(4 * DEG2RAD);
     haloSphere.rotateY(4 * DEG2RAD);
     haloSphere.renderOrder = 3;
+
+    const glowGui = gui.addFolder("glow");
+    glowGui.open();
+    glowGui.addColor(this.colors, "glow").name("glowColor").onChange(
+      (value) => haloSphere.material.uniforms.glowColor.value.set(value)
+    );
+    glowGui
+      .add(haloSphere.rotation, "x")
+      .name("rotationX")
+      .min(-0.03 * Math.PI)
+      .max(0.03 * Math.PI)
+      .step(0.01 * DEG2RAD);
+    glowGui
+      .add(haloSphere.rotation, "y")
+      .name("rotationY")
+      .min(-0.03 * Math.PI)
+      .max(0.03 * Math.PI)
+      .step(0.01 * DEG2RAD);
+
+    const dotGui = gui.addFolder("dot");
+    dotGui.open();
+    dotGui.addColor(this.colors, "dot").name("color").onChange(
+      (value) => circleMaterial.color.set(value)
+    );
+    dotGui.add(circleMaterial, "metalness").min(0).max(1).step(0.01);
+    dotGui.add(circleMaterial, "roughness").min(0).max(1).step(0.01);
+
+
+    const globeGui = gui.addFolder("globe");
+    globeGui.open();
+    globeGui.addColor(this.colors, "globe").name("color").onChange(
+      (value) => globeSphere.material.color.set(value)
+    )
+    globeGui.add(globeSphere.material, "metalness").min(0).max(1).step(0.01);
+    globeGui.add(globeSphere.material, "roughness").min(0).max(1).step(0.01);
 
     scene.add(haloSphere);
 
@@ -293,7 +323,7 @@ class HeroGlobe {
     lightGui.open();
     lightGui.addColor(
       this.colors, name
-    ).onChange((value) => light.color.set(value));
+    ).name("color").onChange((value) => light.color.set(value));
     lightGui.add(light.position, "x").min(-10).max(10).step(0.01);
     lightGui.add(light.position, "y").min(-10).max(10).step(0.01);
     lightGui.add(light.position, "z").min(-10).max(10).step(0.01);
