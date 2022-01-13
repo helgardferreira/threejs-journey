@@ -37,6 +37,7 @@ class HeroGlobe {
     globe: 0x0B122E,
     spotLight1: 0x2188ff,
     spotLight2: 0xf46bbe,
+    spotLight3: 0xff0092,
     directionalLight: 0xa9bfff,
   }
 
@@ -324,6 +325,7 @@ class HeroGlobe {
     lightGui.addColor(
       this.colors, name
     ).name("color").onChange((value) => light.color.set(value));
+    lightGui.add(light, "intensity").min(0).max(15).step(0.1);
     lightGui.add(light.position, "x").min(-10).max(10).step(0.01);
     lightGui.add(light.position, "y").min(-10).max(10).step(0.01);
     lightGui.add(light.position, "z").min(-10).max(10).step(0.01);
@@ -349,13 +351,22 @@ class HeroGlobe {
       0,
       1.25,
     );
+    const spotLight3 = new THREE.SpotLight(
+      this.colors.spotLight3,
+      2,
+      75,
+      .5,
+      0,
+      1.25,
+    );
     const directionalLight = new THREE.DirectionalLight(
       this.colors.directionalLight,
-      3,
+      1.5,
     );
 
     spotLight1.target = this.group;
     spotLight2.target = this.group;
+    spotLight3.target = this.group;
     directionalLight.target = this.group;
 
     spotLight1.position.set(
@@ -363,22 +374,33 @@ class HeroGlobe {
       8,
       -4,
     );
-    directionalLight.position.set(
-      this.group.position.x - 5,
-      this.group.position.y + 3,
-      1,
-    );
     spotLight2.position.set(
       this.group.position.x + this.globeRadius,
       this.globeRadius,
       2 * this.globeRadius,
     );
+    spotLight3.position.set(
+      (this.group.position.x + this.globeRadius) * 2,
+      -this.globeRadius - 3,
+      2 * this.globeRadius,
+    );
+    directionalLight.position.set(
+      this.group.position.x - 1,
+      this.group.position.y,
+      2,
+    );
 
     this.addLightGui(spotLight1, "spotLight1");
-    this.addLightGui(spotLight1, "spotLight2");
-    this.addLightGui(spotLight1, "directionalLight");
+    this.addLightGui(spotLight2, "spotLight2");
+    this.addLightGui(spotLight3, "spotLight3");
+    this.addLightGui(directionalLight, "directionalLight");
 
-    scene.add(spotLight1, spotLight2, directionalLight);
+    scene.add(
+      spotLight1,
+      spotLight2,
+      spotLight3,
+      directionalLight,
+    );
   }
 }
 
