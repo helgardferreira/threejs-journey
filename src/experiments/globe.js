@@ -289,11 +289,9 @@ class HeroGlobe {
       })
     )
 
-    haloSphere.scale.multiplyScalar(1.15);
-    // haloSphere.rotateX(4 * DEG2RAD);
-    // haloSphere.rotateY(4 * DEG2RAD);
-    haloSphere.rotateX(0);
-    haloSphere.rotateY(0);
+    haloSphere.scale.multiplyScalar(1.125);
+    haloSphere.rotateX(2 * DEG2RAD);
+    haloSphere.rotateY(2 * DEG2RAD);
     haloSphere.renderOrder = 3;
 
     const glowGui = gui.addFolder("glow");
