@@ -20,8 +20,8 @@ const scene = new THREE.Scene();
 
 class HeroGlobe {
   globeRadius = 1;
-  // dotRadius = this.globeRadius / 200;
-  dotRadius = this.globeRadius / 250;
+  dotRadius = this.globeRadius / 200;
+  // dotRadius = this.globeRadius / 250;
   // dotRadius = this.globeRadius / 300;
   // rows = 180;
   rows = 200;
@@ -32,12 +32,30 @@ class HeroGlobe {
   group = new THREE.Group();
   map = {};
   colors = {
-    glow: 0x1c2462,
-    dot: 0x376FFF,
-    globe: 0x0B122E,
-    spotLight1: 0x2188ff,
-    spotLight2: 0xf46bbe,
-    directionalLight: 0xa9bfff,
+    // glow: 0x1c2462,
+    glow: 0xe17700,
+    // dot: 0x376FFF,
+    // dot: 0x00E1C6,
+    // dot: 0xe17700,
+    dot: 0xF7931A,
+    // globe: 0x0B122E,
+    // globe: 0x376FFF,
+    // globe: 0x0000FF,
+    // globe: 0x000000,
+    globe: 0xffffff,
+    // spotLight1: 0x2188ff,
+    // spotLight1: 0x9BB7FF,
+    // spotLight1: 0x4D4D4D,
+    spotLight1: 0x919191,
+    // spotLight2: 0xf46bbe,
+    // spotLight2: 0x9BB7FF,
+    // spotLight2: 0x4D4D4D,
+    spotLight2: 0x919191,
+    // directionalLight: 0xa9bfff,
+    // directionalLight: 0xffffff,
+    // directionalLight: 0x9BB7FF,
+    // directionalLight: 0x4D4D4D,
+    directionalLight: 0x919191,
   }
 
   /**
@@ -159,7 +177,8 @@ class HeroGlobe {
 
     const circleMaterial = new THREE.MeshStandardMaterial({
       color: this.colors.dot,
-      metalness: 1,
+      // metalness: 1,
+      metalness: 0,
       roughness: 0.9,
       transparent: true,
       alphaTest: .02
@@ -213,7 +232,8 @@ class HeroGlobe {
         // opacity: 0.5,
         // transparent: true,
         color: this.colors.globe,
-        metalness: 0,
+        // metalness: 0,
+        metalness: 1,
         roughness: .9
       })
     );
@@ -270,8 +290,10 @@ class HeroGlobe {
     )
 
     haloSphere.scale.multiplyScalar(1.15);
-    haloSphere.rotateX(4 * DEG2RAD);
-    haloSphere.rotateY(4 * DEG2RAD);
+    // haloSphere.rotateX(4 * DEG2RAD);
+    // haloSphere.rotateY(4 * DEG2RAD);
+    haloSphere.rotateX(0);
+    haloSphere.rotateY(0);
     haloSphere.renderOrder = 3;
 
     const glowGui = gui.addFolder("glow");
@@ -324,6 +346,7 @@ class HeroGlobe {
     lightGui.addColor(
       this.colors, name
     ).name("color").onChange((value) => light.color.set(value));
+    lightGui.add(light, "intensity").min(0).max(15).step(0.1);
     lightGui.add(light.position, "x").min(-10).max(10).step(0.01);
     lightGui.add(light.position, "y").min(-10).max(10).step(0.01);
     lightGui.add(light.position, "z").min(-10).max(10).step(0.01);
@@ -335,7 +358,8 @@ class HeroGlobe {
   renderLights = () => {
     const spotLight1 = new THREE.SpotLight(
       this.colors.spotLight1,
-      12,
+      // 12,
+      1.5,
       120,
       .3,
       0,
@@ -343,7 +367,8 @@ class HeroGlobe {
     );
     const spotLight2 = new THREE.SpotLight(
       this.colors.spotLight2,
-      5,
+      // 5,
+      1.5,
       75,
       .5,
       0,
@@ -351,7 +376,8 @@ class HeroGlobe {
     );
     const directionalLight = new THREE.DirectionalLight(
       this.colors.directionalLight,
-      3,
+      // 3,
+      2,
     );
 
     spotLight1.target = this.group;
@@ -363,20 +389,23 @@ class HeroGlobe {
       8,
       -4,
     );
-    directionalLight.position.set(
-      this.group.position.x - 5,
-      this.group.position.y + 3,
-      1,
-    );
     spotLight2.position.set(
       this.group.position.x + this.globeRadius,
       this.globeRadius,
       2 * this.globeRadius,
     );
+    directionalLight.position.set(
+      // this.group.position.x - 5,
+      // this.group.position.y + 3,
+      // 1,
+      0,
+      0,
+      10,
+    );
 
     this.addLightGui(spotLight1, "spotLight1");
-    this.addLightGui(spotLight1, "spotLight2");
-    this.addLightGui(spotLight1, "directionalLight");
+    this.addLightGui(spotLight2, "spotLight2");
+    this.addLightGui(directionalLight, "directionalLight");
 
     scene.add(spotLight1, spotLight2, directionalLight);
   }
