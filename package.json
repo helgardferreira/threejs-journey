@@ -17,7 +17,7 @@
     "dat.gui": "^0.7.7",
     "gsap": "3.5.x",
     "stats.js": "^0.17.0",
-    "three": "^0.132.2"
+    "three": "^0.137.4"
   },
   "devDependencies": {
     "@babel/core": "^7.15.5",

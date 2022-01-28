@@ -7,4 +7,5 @@ import "./index.css";
 // import "./basics/debugUi";
 // import "./basics/textures";
 // import "./basics/materials";
-import "./experiments/globe";
+// import "./experiments/globe";
+import "./experiments/interim";

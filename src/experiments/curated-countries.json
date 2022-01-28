@@ -1,0 +1,842 @@
+[
+  {
+    "country": "Australia",
+    "region": "New South Wales",
+    "city": "Sydney",
+    "lat": -33.865,
+    "long": 151.2094,
+    "population": 5312163
+  },
+  {
+    "country": "Australia",
+    "region": "Victoria",
+    "city": "Melbourne",
+    "lat": -37.8136,
+    "long": 144.9631,
+    "population": 5078193
+  },
+  {
+    "country": "Australia",
+    "region": "Queensland",
+    "city": "Brisbane",
+    "lat": -27.4678,
+    "long": 153.0281,
+    "population": 2514184
+  },
+  {
+    "country": "Australia",
+    "region": "Western Australia",
+    "city": "Perth",
+    "lat": -31.9522,
+    "long": 115.8589,
+    "population": 2059484
+  },
+  {
+    "country": "Australia",
+    "region": "South Australia",
+    "city": "Adelaide",
+    "lat": -34.9289,
+    "long": 138.6011,
+    "population": 1345777
+  },
+  {
+    "country": "United States",
+    "region": "New York",
+    "city": "New York",
+    "lat": 40.6943,
+    "long": -73.9249,
+    "population": 18713220
+  },
+  {
+    "country": "United States",
+    "region": "California",
+    "city": "Los Angeles",
+    "lat": 34.1139,
+    "long": -118.4068,
+    "population": 12750807
+  },
+  {
+    "country": "United States",
+    "region": "Illinois",
+    "city": "Chicago",
+    "lat": 41.8373,
+    "long": -87.6862,
+    "population": 8604203
+  },
+  {
+    "country": "United States",
+    "region": "Florida",
+    "city": "Miami",
+    "lat": 25.7839,
+    "long": -80.2102,
+    "population": 6445545
+  },
+  {
+    "country": "United States",
+    "region": "Texas",
+    "city": "Dallas",
+    "lat": 32.7936,
+    "long": -96.7662,
+    "population": 5743938
+  },
+  {
+    "country": "United Kingdom",
+    "region": "London, City of",
+    "city": "London",
+    "lat": 51.5072,
+    "long": -0.1275,
+    "population": 10979000
+  },
+  {
+    "country": "United Kingdom",
+    "region": "Birmingham",
+    "city": "Birmingham",
+    "lat": 52.48,
+    "long": -1.9025,
+    "population": 2897303
+  },
+  {
+    "country": "United Kingdom",
+    "region": "Manchester",
+    "city": "Manchester",
+    "lat": 53.4794,
+    "long": -2.2453,
+    "population": 2705000
+  },
+  {
+    "country": "United Kingdom",
+    "region": "Leeds",
+    "city": "Leeds",
+    "lat": 53.7997,
+    "long": -1.5492,
+    "population": 1901934
+  },
+  {
+    "country": "United Kingdom",
+    "region": "Newcastle upon Tyne",
+    "city": "Newcastle",
+    "lat": 55.0077,
+    "long": -1.6578,
+    "population": 1650000
+  },
+  {
+    "country": "United Arab Emirates",
+    "region": "Dubayy",
+    "city": "Dubai",
+    "lat": 25.2697,
+    "long": 55.3094,
+    "population": 2502715
+  },
+  {
+    "country": "United Arab Emirates",
+    "region": "Ash Shāriqah",
+    "city": "Sharjah",
+    "lat": 25.3575,
+    "long": 55.3919,
+    "population": 1400000
+  },
+  {
+    "country": "United Arab Emirates",
+    "region": "Abū Z̧aby",
+    "city": "Abu Dhabi",
+    "lat": 24.4781,
+    "long": 54.3686,
+    "population": 1000000
+  },
+  {
+    "country": "United Arab Emirates",
+    "region": "Abū Z̧aby",
+    "city": "Al `Ayn",
+    "lat": 24.2075,
+    "long": 55.7447,
+    "population": 766936
+  },
+  {
+    "country": "United Arab Emirates",
+    "region": "‘Ajmān",
+    "city": "`Ajman",
+    "lat": 25.3994,
+    "long": 55.4797,
+    "population": 238119
+  },
+  {
+    "country": "Thailand",
+    "region": "Krung Thep Maha Nakhon",
+    "city": "Bangkok",
+    "lat": 13.75,
+    "long": 100.5167,
+    "population": 17066000
+  },
+  {
+    "country": "Thailand",
+    "region": "Nonthaburi",
+    "city": "Nonthaburi",
+    "lat": 13.8667,
+    "long": 100.5167,
+    "population": 255671
+  },
+  {
+    "country": "Thailand",
+    "region": "Nonthaburi",
+    "city": "Pak Kret",
+    "lat": 13.9125,
+    "long": 100.4978,
+    "population": 184501
+  },
+  {
+    "country": "Thailand",
+    "region": "Songkhla",
+    "city": "Hat Yai",
+    "lat": 7.0167,
+    "long": 100.4667,
+    "population": 159130
+  },
+  {
+    "country": "Thailand",
+    "region": "Nakhon Ratchasima",
+    "city": "Nakhon Ratchasima",
+    "lat": 14.9736,
+    "long": 102.0831,
+    "population": 134440
+  },
+  {
+    "country": "Tanzania",
+    "region": "Dar es Salaam",
+    "city": "Dar es Salaam",
+    "lat": -6.8,
+    "long": 39.2833,
+    "population": 6698000
+  },
+  {
+    "country": "Tanzania",
+    "region": "Arusha",
+    "city": "Arusha",
+    "lat": -3.3667,
+    "long": 36.6833,
+    "population": 416442
+  },
+  {
+    "country": "Tanzania",
+    "region": "Dodoma",
+    "city": "Dodoma",
+    "lat": -6.1835,
+    "long": 35.746,
+    "population": 410956
+  },
+  {
+    "country": "Tanzania",
+    "region": "Mwanza",
+    "city": "Mwanza",
+    "lat": -2.5167,
+    "long": 32.9,
+    "population": 385810
+  },
+  {
+    "country": "Tanzania",
+    "region": "Mbeya",
+    "city": "Mbeya",
+    "lat": -8.9,
+    "long": 33.45,
+    "population": 291649
+  },
+  {
+    "country": "Switzerland",
+    "region": "Zürich",
+    "city": "Zurich",
+    "lat": 47.3786,
+    "long": 8.54,
+    "population": 434008
+  },
+  {
+    "country": "Switzerland",
+    "region": "Genève",
+    "city": "Geneva",
+    "lat": 46.2,
+    "long": 6.15,
+    "population": 201818
+  },
+  {
+    "country": "Switzerland",
+    "region": "Basel-Stadt",
+    "city": "Basel",
+    "lat": 47.5606,
+    "long": 7.5906,
+    "population": 177595
+  },
+  {
+    "country": "Switzerland",
+    "region": "Vaud",
+    "city": "Lausanne",
+    "lat": 46.5333,
+    "long": 6.6333,
+    "population": 138905
+  },
+  {
+    "country": "Switzerland",
+    "region": "Bern",
+    "city": "Bern",
+    "lat": 46.948,
+    "long": 7.4474,
+    "population": 133798
+  },
+  {
+    "country": "South Africa",
+    "region": "Gauteng",
+    "city": "Johannesburg",
+    "lat": -26.2044,
+    "long": 28.0416,
+    "population": 4434827
+  },
+  {
+    "country": "South Africa",
+    "region": "Gauteng",
+    "city": "Vereeniging",
+    "lat": -26.6736,
+    "long": 27.9319,
+    "population": 1074000
+  },
+  {
+    "country": "South Africa",
+    "region": "KwaZulu-Natal",
+    "city": "Pietermaritzburg",
+    "lat": -29.5833,
+    "long": 30.4167,
+    "population": 750845
+  },
+  {
+    "country": "South Africa",
+    "region": "Gauteng",
+    "city": "Pretoria",
+    "lat": -25.7464,
+    "long": 28.1881,
+    "population": 741651
+  },
+  {
+    "country": "South Africa",
+    "region": "KwaZulu-Natal",
+    "city": "Durban",
+    "lat": -29.8583,
+    "long": 31.025,
+    "population": 595061
+  },
+  {
+    "country": "Saudi Arabia",
+    "region": "Ar Riyāḑ",
+    "city": "Riyadh",
+    "lat": 24.65,
+    "long": 46.71,
+    "population": 6881000
+  },
+  {
+    "country": "Saudi Arabia",
+    "region": "Makkah al Mukarramah",
+    "city": "Jeddah",
+    "lat": 21.5428,
+    "long": 39.1728,
+    "population": 3976000
+  },
+  {
+    "country": "Saudi Arabia",
+    "region": "Makkah al Mukarramah",
+    "city": "Mecca",
+    "lat": 21.4225,
+    "long": 39.8261,
+    "population": 1675368
+  },
+  {
+    "country": "Saudi Arabia",
+    "region": "Al Madīnah al Munawwarah",
+    "city": "Medina",
+    "lat": 24.4667,
+    "long": 39.6,
+    "population": 1180770
+  },
+  {
+    "country": "Saudi Arabia",
+    "region": "Ash Sharqīyah",
+    "city": "Ad Dammam",
+    "lat": 26.4333,
+    "long": 50.1,
+    "population": 903312
+  },
+  {
+    "country": "Philippines",
+    "region": "Manila",
+    "city": "Manila",
+    "lat": 14.6,
+    "long": 120.9833,
+    "population": 23088000
+  },
+  {
+    "country": "Philippines",
+    "region": "Quezon",
+    "city": "Quezon City",
+    "lat": 14.6333,
+    "long": 121.0333,
+    "population": 2936116
+  },
+  {
+    "country": "Philippines",
+    "region": "Davao",
+    "city": "Davao",
+    "lat": 7.0667,
+    "long": 125.6,
+    "population": 1632991
+  },
+  {
+    "country": "Philippines",
+    "region": "Caloocan",
+    "city": "Caloocan City",
+    "lat": 14.65,
+    "long": 120.9667,
+    "population": 1583978
+  },
+  {
+    "country": "Philippines",
+    "region": "Cebu",
+    "city": "Cebu City",
+    "lat": 10.3,
+    "long": 123.9,
+    "population": 922611
+  },
+  {
+    "country": "Nigeria",
+    "region": "Lagos",
+    "city": "Lagos",
+    "lat": 6.45,
+    "long": 3.4,
+    "population": 15279000
+  },
+  {
+    "country": "Nigeria",
+    "region": "Kano",
+    "city": "Kano",
+    "lat": 12,
+    "long": 8.5167,
+    "population": 2828861
+  },
+  {
+    "country": "Nigeria",
+    "region": "Oyo",
+    "city": "Ibadan",
+    "lat": 7.3964,
+    "long": 3.9167,
+    "population": 2628000
+  },
+  {
+    "country": "Nigeria",
+    "region": "Anambra",
+    "city": "Onitsha",
+    "lat": 6.1667,
+    "long": 6.7833,
+    "population": 1483000
+  },
+  {
+    "country": "Nigeria",
+    "region": "Imo",
+    "city": "Owerri",
+    "lat": 5.4833,
+    "long": 7.0333,
+    "population": 1401873
+  },
+  {
+    "country": "Mexico",
+    "region": "Ciudad de México",
+    "city": "Mexico City",
+    "lat": 19.4333,
+    "long": -99.1333,
+    "population": 20996000
+  },
+  {
+    "country": "Mexico",
+    "region": "Jalisco",
+    "city": "Guadalajara",
+    "lat": 20.6767,
+    "long": -103.3475,
+    "population": 5253000
+  },
+  {
+    "country": "Mexico",
+    "region": "Nuevo León",
+    "city": "Monterrey",
+    "lat": 25.6667,
+    "long": -100.3,
+    "population": 4295000
+  },
+  {
+    "country": "Mexico",
+    "region": "Baja California",
+    "city": "Tijuana",
+    "lat": 32.525,
+    "long": -117.0333,
+    "population": 2384609
+  },
+  {
+    "country": "Mexico",
+    "region": "México",
+    "city": "Ecatepec",
+    "lat": 19.6097,
+    "long": -99.06,
+    "population": 1656107
+  },
+  {
+    "country": "Kenya",
+    "region": "Nairobi City",
+    "city": "Nairobi",
+    "lat": -1.2864,
+    "long": 36.8172,
+    "population": 5545000
+  },
+  {
+    "country": "Kenya",
+    "region": "Meru",
+    "city": "Meru",
+    "lat": 0.05,
+    "long": 37.65,
+    "population": 1833000
+  },
+  {
+    "country": "Kenya",
+    "region": "Mombasa",
+    "city": "Mombasa",
+    "lat": -4.05,
+    "long": 39.6667,
+    "population": 1200000
+  },
+  {
+    "country": "Kenya",
+    "region": "Kisumu",
+    "city": "Kisumu",
+    "lat": -0.1,
+    "long": 34.75,
+    "population": 409928
+  },
+  {
+    "country": "Kenya",
+    "region": "Nakuru",
+    "city": "Nakuru",
+    "lat": -0.2833,
+    "long": 36.0667,
+    "population": 307990
+  },
+  {
+    "country": "Japan",
+    "region": "Tōkyō",
+    "city": "Tokyo",
+    "lat": 35.6897,
+    "long": 139.6922,
+    "population": 37977000
+  },
+  {
+    "country": "Japan",
+    "region": "Ōsaka",
+    "city": "Osaka",
+    "lat": 34.75,
+    "long": 135.4601,
+    "population": 14977000
+  },
+  {
+    "country": "Japan",
+    "region": "Aichi",
+    "city": "Nagoya",
+    "lat": 35.1167,
+    "long": 136.9333,
+    "population": 9113000
+  },
+  {
+    "country": "Japan",
+    "region": "Kanagawa",
+    "city": "Yokohama",
+    "lat": 35.4333,
+    "long": 139.6333,
+    "population": 3757630
+  },
+  {
+    "country": "Japan",
+    "region": "Fukuoka",
+    "city": "Fukuoka",
+    "lat": 33.6,
+    "long": 130.4167,
+    "population": 2128000
+  },
+  {
+    "country": "Italy",
+    "region": "Lazio",
+    "city": "Rome",
+    "lat": 41.8931,
+    "long": 12.4828,
+    "population": 2872800
+  },
+  {
+    "country": "Italy",
+    "region": "Lombardy",
+    "city": "Milan",
+    "lat": 45.4669,
+    "long": 9.19,
+    "population": 1366180
+  },
+  {
+    "country": "Italy",
+    "region": "Campania",
+    "city": "Naples",
+    "lat": 40.8333,
+    "long": 14.25,
+    "population": 966144
+  },
+  {
+    "country": "Italy",
+    "region": "Piedmont",
+    "city": "Turin",
+    "lat": 45.0667,
+    "long": 7.7,
+    "population": 870952
+  },
+  {
+    "country": "Italy",
+    "region": "Sicilia",
+    "city": "Palermo",
+    "lat": 38.1157,
+    "long": 13.3613,
+    "population": 668405
+  },
+  {
+    "country": "Iran",
+    "region": "Tehrān",
+    "city": "Tehran",
+    "lat": 35.7,
+    "long": 51.4167,
+    "population": 13633000
+  },
+  {
+    "country": "Iran",
+    "region": "Khorāsān-e Raẕavī",
+    "city": "Mashhad",
+    "lat": 36.3069,
+    "long": 59.6042,
+    "population": 3001184
+  },
+  {
+    "country": "Iran",
+    "region": "Eşfahān",
+    "city": "Esfahan",
+    "lat": 32.6447,
+    "long": 51.6675,
+    "population": 1756126
+  },
+  {
+    "country": "Iran",
+    "region": "Alborz",
+    "city": "Karaj",
+    "lat": 35.8327,
+    "long": 50.9915,
+    "population": 1592492
+  },
+  {
+    "country": "Iran",
+    "region": "Āz̄arbāyjān-e Sharqī",
+    "city": "Tabriz",
+    "lat": 38.0833,
+    "long": 46.2833,
+    "population": 1558693
+  },
+  {
+    "country": "India",
+    "region": "Delhi",
+    "city": "Delhi",
+    "lat": 28.66,
+    "long": 77.23,
+    "population": 29617000
+  },
+  {
+    "country": "India",
+    "region": "Mahārāshtra",
+    "city": "Mumbai",
+    "lat": 18.9667,
+    "long": 72.8333,
+    "population": 23355000
+  },
+  {
+    "country": "India",
+    "region": "West Bengal",
+    "city": "Kolkata",
+    "lat": 22.5411,
+    "long": 88.3378,
+    "population": 17560000
+  },
+  {
+    "country": "India",
+    "region": "Karnātaka",
+    "city": "Bangalore",
+    "lat": 12.9699,
+    "long": 77.598,
+    "population": 13707000
+  },
+  {
+    "country": "India",
+    "region": "Tamil Nādu",
+    "city": "Chennai",
+    "lat": 13.0825,
+    "long": 80.275,
+    "population": 11324000
+  },
+  {
+    "country": "Germany",
+    "region": "Berlin",
+    "city": "Berlin",
+    "lat": 52.5167,
+    "long": 13.3833,
+    "population": 3644826
+  },
+  {
+    "country": "Germany",
+    "region": "Hamburg",
+    "city": "Hamburg",
+    "lat": 53.55,
+    "long": 10,
+    "population": 1841179
+  },
+  {
+    "country": "Germany",
+    "region": "Bavaria",
+    "city": "Munich",
+    "lat": 48.1372,
+    "long": 11.5755,
+    "population": 1471508
+  },
+  {
+    "country": "Germany",
+    "region": "North Rhine-Westphalia",
+    "city": "Cologne",
+    "lat": 50.9422,
+    "long": 6.9578,
+    "population": 1085664
+  },
+  {
+    "country": "Germany",
+    "region": "Hesse",
+    "city": "Frankfurt",
+    "lat": 50.1136,
+    "long": 8.6797,
+    "population": 753056
+  },
+  {
+    "country": "France",
+    "region": "Île-de-France",
+    "city": "Paris",
+    "lat": 48.8566,
+    "long": 2.3522,
+    "population": 11020000
+  },
+  {
+    "country": "France",
+    "region": "Provence-Alpes-Côte d’Azur",
+    "city": "Nice",
+    "lat": 43.7034,
+    "long": 7.2663,
+    "population": 1006402
+  },
+  {
+    "country": "France",
+    "region": "Occitanie",
+    "city": "Toulouse",
+    "lat": 43.6045,
+    "long": 1.444,
+    "population": 968638
+  },
+  {
+    "country": "France",
+    "region": "Provence-Alpes-Côte d’Azur",
+    "city": "Marseille",
+    "lat": 43.2964,
+    "long": 5.37,
+    "population": 870018
+  },
+  {
+    "country": "France",
+    "region": "Bretagne",
+    "city": "Rennes",
+    "lat": 48.1147,
+    "long": -1.6794,
+    "population": 727357
+  },
+  {
+    "country": "France",
+    "region": "Île-de-France",
+    "city": "Paris",
+    "lat": 48.8566,
+    "long": 2.3522,
+    "population": 11020000
+  },
+  {
+    "country": "France",
+    "region": "Provence-Alpes-Côte d’Azur",
+    "city": "Nice",
+    "lat": 43.7034,
+    "long": 7.2663,
+    "population": 1006402
+  },
+  {
+    "country": "France",
+    "region": "Occitanie",
+    "city": "Toulouse",
+    "lat": 43.6045,
+    "long": 1.444,
+    "population": 968638
+  },
+  {
+    "country": "France",
+    "region": "Provence-Alpes-Côte d’Azur",
+    "city": "Marseille",
+    "lat": 43.2964,
+    "long": 5.37,
+    "population": 870018
+  },
+  {
+    "country": "France",
+    "region": "Bretagne",
+    "city": "Rennes",
+    "lat": 48.1147,
+    "long": -1.6794,
+    "population": 727357
+  },
+  {
+    "country": "Brazil",
+    "region": "São Paulo",
+    "city": "Sao Paulo",
+    "lat": -23.5504,
+    "long": -46.6339,
+    "population": 22046000
+  },
+  {
+    "country": "Brazil",
+    "region": "Rio de Janeiro",
+    "city": "Rio de Janeiro",
+    "lat": -22.9083,
+    "long": -43.1964,
+    "population": 12272000
+  },
+  {
+    "country": "Brazil",
+    "region": "Minas Gerais",
+    "city": "Belo Horizonte",
+    "lat": -19.9281,
+    "long": -43.9419,
+    "population": 5159000
+  },
+  {
+    "country": "Brazil",
+    "region": "Distrito Federal",
+    "city": "Brasilia",
+    "lat": -15.7939,
+    "long": -47.8828,
+    "population": 3015268
+  },
+  {
+    "country": "Brazil",
+    "region": "Bahia",
+    "city": "Salvador",
+    "lat": -12.9708,
+    "long": -38.5108,
+    "population": 2886698
+  }
+]

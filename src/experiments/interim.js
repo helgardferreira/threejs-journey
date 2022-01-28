@@ -1,10 +1,12 @@
 import * as THREE from 'three'
 import {DEG2RAD, RAD2DEG} from 'three/src/math/MathUtils'
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls.js'
+
 import Stats from 'stats.js'
 import * as dat from 'dat.gui'
-import worldMap from 'assets/images/map.png'
-import './styles.css'
+
+import createCanvas from "../createCanvas";
+import worldMap from '/static/textures/map.png'
 import data from './curated-countries.json'
 
 const latLongToVector3 = (lat, long, radius) => {
@@ -45,7 +47,7 @@ const normalize = (value, min, max, a, b) => {
 }
 
 class Path {
-  constructor(data, radius, clearFunc = () => {
+  constructor(data, radius, disposeCallback = () => {
   }) {
     this.data = data
     const startVector = latLongToVector3(
@@ -123,18 +125,21 @@ class Path {
       }),
     )
 
-    this.coin = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.015, 0.015, 0.01, 14),
+    this.sphere = new THREE.Mesh(
+      // new THREE.CylinderGeometry(0.015, 0.015, 0.01, 14),
+      new THREE.SphereGeometry(0.015),
       new THREE.MeshBasicMaterial({
         // color: 0xf7931a,
         color: 0x00e1c6,
       }),
     )
-    this.coin.position.copy(this.bezier.getPointAt(0))
-    this.coin.name = 'coin'
+    this.sphere.position.copy(this.bezier.getPointAt(0))
+    this.sphere.name = 'sphere'
 
     this.group = new THREE.Group()
-    this.group.add(this.coin, this.line, this.hitbox)
+    this.group.add(this.sphere)
+    this.group.add(this.line)
+    this.group.add(this.hitbox)
     this.group.name = this.data.label
     this.uuid = this.group.uuid
 
@@ -146,11 +151,11 @@ class Path {
     this.minPauseTime = (this.animationSpeed / 18) * 540
     this.isAnimating = true
 
-    this.clear = () => clearFunc(this.uuid)
+    this.disposeCallback = () => disposeCallback(this.uuid)
   }
 
   dispose = () => {
-    this.clear()
+    this.disposeCallback()
     const disposeChildren = (o) => {
       if (o.dispose) {
         o.dispose()
@@ -158,14 +163,14 @@ class Path {
     }
     this.line.traverse(disposeChildren)
     this.hitbox.traverse(disposeChildren)
-    this.coin.traverse(disposeChildren)
-    this.group.remove(this.line, this.hitbox, this.coin)
+    this.sphere.traverse(disposeChildren)
+    this.group.remove(this.line, this.hitbox, this.sphere)
   }
 
   setIsHover = (isHover) => {
     this.isAnimating = !isHover
-    this.line.material.color.set(isHover ? 0x00e1c6 : 0x00e1c6)
-    this.coin.material.color.set(isHover ? 0x00e1c6 : 0x00e1c6)
+    this.line.material.color.set(isHover ? 0xffffff : 0x00e1c6)
+    this.sphere.material.color.set(isHover ? 0xffffff : 0x00e1c6)
   }
 
   update = () => {
@@ -175,14 +180,10 @@ class Path {
     if (this.isAnimating) this.renderCount += this.animationSpeed
 
     if (this.renderCount > this.line.geometry.index.count)
-      this.coin.visible = false
-    else
-      this.coin.rotateZ(
-        normalize(this.bezier.getLength(), 0, 4, 6, 15) * DEG2RAD,
-      )
+      this.sphere.visible = false
 
     if (this.renderCount <= this.line.geometry.index.count) {
-      this.coin.position.copy(
+      this.sphere.position.copy(
         this.bezier.getPointAt(
           normalize(this.renderCount, 0, this.line.geometry.index.count, 0, 1),
         ),
@@ -230,8 +231,7 @@ class DataDisplay {
   setData = (data) => {
     if (data) {
       this.element.innerHTML = `
-      <p style='padding-bottom: 12px;'>${data.label}</p>
-      <p>${data.currency.name}</p>
+      <p>${data.label}</p>
     `
     }
   }
@@ -260,31 +260,23 @@ class DataDisplay {
   }
 }
 
-export class HeroGlobe {
+export class Globe {
   constructor(props) {
     this.props = props
     this.globeRadius = 1
-    // this.dotRadius = this.globeRadius / 100
-    this.dotRadius = this.globeRadius / 150
-    // this.dotRadius = this.globeRadius / 200
-    // this.dotRadius = this.globeRadius / 250
-    // this.dotRadius = this.globeRadius / 300
-    // this.rows = 180
+    this.dotRadius = this.globeRadius / 200
     this.rows = 200
-    // this.rows = 360;
     this.dotDensity = 50
     this.dotMatrices = []
     this.enableLights = props.enableLights
     this.sceneSizes = {
-      width: this.props.canvas.offsetWidth,
-      height: this.props.canvas.offsetHeight,
+      width: window.innerWidth,
+      height: window.innerHeight,
     }
-    this.isMobile = window.innerWidth <= 980
 
     if (this.props.debug) {
-      this.gui = new dat.GUI({width: 400, autoPlace: false})
-      this.gui.domElement.id = 'dat-gui'
-      document.body.appendChild(this.gui.domElement)
+      this.gui = new dat.GUI({width: 400})
+      this.gui.close()
     }
 
     this.scene = new THREE.Scene()
@@ -309,11 +301,10 @@ export class HeroGlobe {
     this.controls.enableDamping = true
     this.controls.enableZoom = false
     this.controls.enablePan = false
-    this.controls.enabled = !this.isMobile
 
     this.camera.position.x = 0
-    this.camera.position.y = this.isMobile ? 0.8 : 0
-    this.camera.position.z = this.isMobile ? 3.5 : 8
+    this.camera.position.y = 0
+    this.camera.position.z = 8
 
     if (this.props.debug) {
       const cameraGui = this.gui.addFolder('camera')
@@ -351,7 +342,7 @@ export class HeroGlobe {
     }
 
     this.pathMap = new Map()
-    this.maxPaths = 4
+    this.maxPaths = 12
     this.raycaster = new THREE.Raycaster()
     // Off-screen by default
     this.mouse = new THREE.Vector2(-100, -100)
@@ -514,12 +505,7 @@ export class HeroGlobe {
           : new THREE.MeshBasicMaterial({
             color: this.colors.globe,
             transparent: true,
-            // opacity: 0,
-            opacity: 0.03,
-            // opacity: 0.5,
-            // opacity: 0.8,
-            // opacity: 0.9,
-            // opacity: 1,
+            opacity: 0.5,
           }),
       )
 
@@ -567,53 +553,37 @@ export class HeroGlobe {
       this.renderAnimation()
 
       // TODO: Refactor
-      this.props.canvas.addEventListener(
+      window.addEventListener(
         'mousemove',
-        this.canvasMouseMoveHandler,
+        this.mouseMoveHandler,
       )
 
-      window.addEventListener('resize', () => {
-        if (window.innerWidth <= 980 && !this.isMobile) {
-          this.camera.position.x = 0
-          this.camera.position.y = 0.8
-          this.camera.position.z = 3.5
-        } else if (window.innerWidth > 980 && this.isMobile) {
-          this.camera.position.x = 0
-          this.camera.position.y = 0
-          this.camera.position.z = 8
-        }
-        this.isMobile = window.innerWidth <= 980
-
-        if (this.isMobile) {
-          this.sceneSizes.width = window.innerWidth
-          this.sceneSizes.height = 400
-          this.controls.enabled = false
-        } else {
-          this.sceneSizes.width = 800
-          this.sceneSizes.height = 800
-          this.controls.enabled = true
-        }
-
-        // Update camera
-        this.camera.aspect = this.sceneSizes.width / this.sceneSizes.height
-        this.camera.updateProjectionMatrix()
-
-        // Update renderer
-        this.renderer.setSize(this.sceneSizes.width, this.sceneSizes.height)
-        this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-      })
+      window.addEventListener('resize', this.resizeCanvasHandler)
     })
   }
 
-  canvasMouseMoveHandler = (event) => {
+  resizeCanvasHandler = () => {
+    this.sceneSizes.width = window.innerWidth
+    this.sceneSizes.height = window.innerHeight
+
+    // Update camera
+    this.camera.aspect = this.sceneSizes.width / this.sceneSizes.height
+    this.camera.updateProjectionMatrix()
+
+    // Update renderer
+    this.renderer.setSize(this.sceneSizes.width, this.sceneSizes.height)
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+  }
+
+  mouseMoveHandler = (event) => {
     this.screenMouse.x = event.pageX
     this.screenMouse.y = event.pageY
 
     this.mouse.x =
-      (event.offsetX / this.props.canvas.getBoundingClientRect().width) * 2 - 1
+      (event.clientX / window.innerWidth) * 2 - 1
     this.mouse.y =
-      -(event.offsetY / this.props.canvas.getBoundingClientRect().height) * 2 +
-      1
+      -(event.clientY / window.innerHeight) * 2 + 1
+
   }
 
   addLightGui = (light, name) => {
@@ -713,9 +683,6 @@ export class HeroGlobe {
         startLocation,
         endLocation,
         label: `${startLocation.city}, ${startLocation.country} To ${endLocation.city}, ${endLocation.country}`,
-        currency: {
-          name: 'Bitcoin',
-        },
       }
     })
 
@@ -731,24 +698,19 @@ export class HeroGlobe {
         ) > -1
 
       if (!alreadyExists && this.pathMap.size < this.maxPaths) {
-        const transactionPath = new Path(
+        const path = new Path(
           pathData[intervalCount],
           this.globeRadius,
           (uuid) => this.pathMap.delete(uuid),
         )
-        this.pathMap.set(transactionPath.uuid, transactionPath)
-        this.group.add(transactionPath.group)
+        this.pathMap.set(path.uuid, path)
+        this.group.add(path.group)
       }
-    }, 500)
+    }, 200)
   }
 
   update = () => {
     this.pathMap.forEach((mesh) => mesh.update())
-
-    if (this.isMobile) {
-      this.group.rotateY(0.1 * DEG2RAD)
-      return
-    }
 
     this.raycaster.setFromCamera(this.mouse, this.camera)
     const intersects = this.raycaster.intersectObjects(this.group.children)
@@ -820,15 +782,19 @@ export class HeroGlobe {
     window.requestAnimationFrame(this.renderAnimation)
   }
 
-  cleanup = () => {
+  dispose = () => {
     this.stopAnimation = true
     this.renderer.dispose()
     this.dataDisplay.dispose()
 
     clearInterval(this.pathInterval)
-    this.props.canvas.removeEventListener(
+    window.removeEventListener(
       'mousemove',
-      this.canvasMouseMoveHandler,
+      this.mouseMoveHandler,
+    )
+    window.removeEventListener(
+      'resize',
+      this.resizeCanvasHandler
     )
 
     if (this.props.debug) {
@@ -840,3 +806,14 @@ export class HeroGlobe {
     console.log('disposed', new Date().toString())
   }
 }
+
+const canvas = createCanvas();
+
+const globe = new Globe({
+  canvas,
+  enableLights: false,
+  enableHalo: false,
+  debug: true
+})
+
+globe.renderGlobe()
