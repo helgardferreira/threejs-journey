@@ -1,9 +1,9 @@
 // noinspection JSCheckFunctionSignatures
 
 import * as THREE from "three";
+import {DEG2RAD} from "three/src/math/MathUtils";
 import {OrbitControls} from "three/examples/jsm/controls/OrbitControls.js";
 import createCanvas from "../createCanvas";
-import {DEG2RAD} from "three/src/math/MathUtils";
 import Stats from 'stats.js'
 import * as dat from "dat.gui";
 
