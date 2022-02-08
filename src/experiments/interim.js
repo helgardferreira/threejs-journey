@@ -47,7 +47,7 @@ const normalize = (value, min, max, a, b) => {
 }
 
 class Path {
-  constructor(data, radius, disposeCallback = () => {
+  constructor(data, pathColor, radius, arcHeightConfig, disposeCallback = () => {
   }) {
     this.data = data
     const startVector = latLongToVector3(
@@ -63,12 +63,24 @@ class Path {
 
     const tubeDistance = startVector.distanceTo(endVector)
 
+    // const arcHeight = normalize(
+    //   tubeDistance,
+    //   0,
+    //   2 * radius,
+    //   radius,
+    //   tubeDistance > 1.8 * radius ? 2 : tubeDistance > 1.4 * radius ? 1.7 : 1.6,
+    // )
+
     const arcHeight = normalize(
       tubeDistance,
-      0,
-      2 * radius,
-      radius,
-      tubeDistance > 1.8 * radius ? 2 : tubeDistance > 1.4 * radius ? 1.7 : 1.6,
+      arcHeightConfig.misc.min,
+      arcHeightConfig.misc.max,
+      arcHeightConfig.misc.a,
+      tubeDistance > arcHeightConfig.thresholds.mediumToLong * radius
+        ? arcHeightConfig.heights.long
+        : tubeDistance > arcHeightConfig.thresholds.shortToMedium * radius
+          ? arcHeightConfig.heights.medium
+          : arcHeightConfig.heights.short
     )
 
     const midVector = latLongToVector3(
@@ -111,40 +123,41 @@ class Path {
       new THREE.TubeGeometry(this.bezier, tubeSegmentLength, 0.004, 3, false),
       new THREE.MeshBasicMaterial({
         // color: 0xf7931a,
-        color: 0x00e1c6,
+        // color: 0x00e1c6,
+        color: pathColor
       }),
     )
     this.line.name = 'line'
 
-    this.hitbox = new THREE.Mesh(
-      new THREE.TubeGeometry(this.bezier, tubeSegmentLength, 0.04, 3, false),
-      new THREE.MeshBasicMaterial({
-        transparent: true,
-        // color: 'black',
-        opacity: 0,
-      }),
-    )
+    // this.hitbox = new THREE.Mesh(
+    //   new THREE.TubeGeometry(this.bezier, tubeSegmentLength, 0.04, 3, false),
+    //   new THREE.MeshBasicMaterial({
+    //     transparent: true,
+    //     opacity: 0,
+    //   }),
+    // )
 
-    this.sphere = new THREE.Mesh(
-      // new THREE.CylinderGeometry(0.015, 0.015, 0.01, 14),
-      new THREE.SphereGeometry(0.015),
-      new THREE.MeshBasicMaterial({
-        // color: 0xf7931a,
-        color: 0x00e1c6,
-      }),
-    )
-    this.sphere.position.copy(this.bezier.getPointAt(0))
-    this.sphere.name = 'sphere'
+    // this.sphere = new THREE.Mesh(
+    //   // new THREE.CylinderGeometry(0.015, 0.015, 0.01, 14),
+    //   new THREE.SphereGeometry(0.015),
+    //   new THREE.MeshBasicMaterial({
+    //     // color: 0xf7931a,
+    //     // color: 0x00e1c6,
+    //     color: pathColor
+    //   }),
+    // )
+    // this.sphere.position.copy(this.bezier.getPointAt(0))
+    // this.sphere.name = 'sphere'
 
     this.group = new THREE.Group()
-    this.group.add(this.sphere)
+    // this.group.add(this.sphere)
     this.group.add(this.line)
-    this.group.add(this.hitbox)
+    // this.group.add(this.hitbox)
     this.group.name = this.data.label
     this.uuid = this.group.uuid
 
     this.line.geometry.setDrawRange(0, 0)
-    this.hitbox.geometry.setDrawRange(0, 0)
+    // this.hitbox.geometry.setDrawRange(0, 0)
     this.renderCount = 0
     this.deRenderCount = 0
     this.animationSpeed = Math.ceil((18 * this.bezier.getLength()) / 9) * 3
@@ -162,15 +175,19 @@ class Path {
       }
     }
     this.line.traverse(disposeChildren)
-    this.hitbox.traverse(disposeChildren)
-    this.sphere.traverse(disposeChildren)
-    this.group.remove(this.line, this.hitbox, this.sphere)
+    // this.hitbox.traverse(disposeChildren)
+    // this.sphere.traverse(disposeChildren)
+    this.group.remove(
+      this.line,
+      // this.hitbox,
+      // this.sphere
+    )
   }
 
   setIsHover = (isHover) => {
     this.isAnimating = !isHover
     this.line.material.color.set(isHover ? 0xffffff : 0x00e1c6)
-    this.sphere.material.color.set(isHover ? 0xffffff : 0x00e1c6)
+    // this.sphere.material.color.set(isHover ? 0xffffff : 0x00e1c6)
   }
 
   update = () => {
@@ -179,18 +196,18 @@ class Path {
     // so 3 radial segments and 1 length segment equates to 18 total vertices
     if (this.isAnimating) this.renderCount += this.animationSpeed
 
-    if (this.renderCount > this.line.geometry.index.count)
-      this.sphere.visible = false
+    // if (this.renderCount > this.line.geometry.index.count)
+    // this.sphere.visible = false
 
     if (this.renderCount <= this.line.geometry.index.count) {
-      this.sphere.position.copy(
-        this.bezier.getPointAt(
-          normalize(this.renderCount, 0, this.line.geometry.index.count, 0, 1),
-        ),
-      )
+      // this.sphere.position.copy(
+      //   this.bezier.getPointAt(
+      //     normalize(this.renderCount, 0, this.line.geometry.index.count, 0, 1),
+      //   ),
+      // )
 
       this.line.geometry.setDrawRange(0, this.renderCount)
-      this.hitbox.geometry.setDrawRange(0, this.renderCount)
+      // this.hitbox.geometry.setDrawRange(0, this.renderCount)
     }
     // Pause factor
     else if (
@@ -200,7 +217,7 @@ class Path {
       if (this.isAnimating) this.deRenderCount += this.animationSpeed
 
       this.line.geometry.setDrawRange(this.deRenderCount, Infinity)
-      this.hitbox.geometry.setDrawRange(this.deRenderCount, Infinity)
+      // this.hitbox.geometry.setDrawRange(this.deRenderCount, Infinity)
 
       if (this.deRenderCount >= this.line.geometry.index.count) {
         this.dispose()
@@ -264,7 +281,7 @@ export class Globe {
   constructor(props) {
     this.props = props
     this.globeRadius = 1
-    this.dotRadius = this.globeRadius / 200
+    this.dotRadius = this.globeRadius / 150
     this.rows = 200
     this.dotDensity = 50
     this.dotMatrices = []
@@ -276,7 +293,6 @@ export class Globe {
 
     if (this.props.debug) {
       this.gui = new dat.GUI({width: 400})
-      this.gui.close()
     }
 
     this.scene = new THREE.Scene()
@@ -318,20 +334,36 @@ export class Globe {
     this.uuid = this.group.uuid
     this.map = {}
     this.colors = {
-      glow: 0x1c2462,
-      // glow: 0x1c2462,
-      dot: 0x376fff,
-      globe: 0x0b122e,
-      // globe: 0x000000,
-      // globe: 0x00007f,
-      // globe: 0x1d3782,
-      // globe: 0x376fff,
-      // globe: 0xf1f1f1,
-      spotLight1: 0x2188ff,
-      spotLight2: 0xf46bbe,
-      spotLight3: 0xff0092,
-      directionalLight: 0xa9bfff,
+      glow: '#1c2462',
+      dot: '#376fff',
+      globe: '#0b122e',
+      spotLight1: '#2188ff',
+      spotLight2: '#f46bbe',
+      spotLight3: '#ff0092',
+      directionalLight: '#a9bfff',
+      paths: [
+        '#00E1C6',
+        '#00E1C6',
+        '#376FFF',
+        '#C3D4FF',
+        '#0B122E',
+
+        // '#f7931a',
+        // '#376FFF',
+        // '#376FFF',
+        // '#C3D4FF',
+        // '#C3D4FF',
+      ]
     }
+
+    this.linesGui = this.gui.addFolder("lines")
+    this.colors
+      .paths
+      .forEach(
+        (color, index) => this.linesGui
+          .addColor(this.colors.paths, `${index}`)
+          .name(`lineColor${index + 1}`)
+      )
 
     this.stopAnimation = false
 
@@ -342,8 +374,43 @@ export class Globe {
     }
 
     this.pathMap = new Map()
-    this.maxPaths = 12
-    this.raycaster = new THREE.Raycaster()
+
+    this.config = {
+      maxLines: 10,
+      arcHeight: {
+        thresholds: {
+          mediumToLong: 1.8,
+          shortToMedium: 1.2,
+        },
+        heights: {
+          short: 1.3,
+          medium: 1.53,
+          long: 1.83
+        },
+        misc: {
+          a: this.globeRadius,
+          min: 0,
+          max: 2 * this.globeRadius
+        }
+      }
+    }
+
+    this.linesGui.add(this.config, 'maxLines').min(0).max(20).step(1)
+    const lineThresholdsGui = this.linesGui.addFolder("thresholds");
+    lineThresholdsGui.add(this.config.arcHeight.thresholds, 'mediumToLong').min(0).max(5).step(0.1)
+    lineThresholdsGui.add(this.config.arcHeight.thresholds, 'shortToMedium').min(0).max(5).step(0.1)
+
+    const lineHeightsGui = this.linesGui.addFolder("heights")
+    lineHeightsGui.add(this.config.arcHeight.heights, "short").min(0).max(5).step(0.1)
+    lineHeightsGui.add(this.config.arcHeight.heights, "medium").min(0).max(5).step(0.1)
+    lineHeightsGui.add(this.config.arcHeight.heights, "long").min(0).max(5).step(0.1)
+
+    const lineMiscGui = this.linesGui.addFolder("misc")
+    lineMiscGui.add(this.config.arcHeight.misc, "a").min(0).max(5).step(0.1)
+    lineMiscGui.add(this.config.arcHeight.misc, "min").min(0).max(5).step(0.1)
+    lineMiscGui.add(this.config.arcHeight.misc, "max").min(0).max(5).step(0.1)
+
+    // this.raycaster = new THREE.Raycaster()
     // Off-screen by default
     this.mouse = new THREE.Vector2(-100, -100)
     this.screenMouse = new THREE.Vector2()
@@ -505,7 +572,9 @@ export class Globe {
           : new THREE.MeshBasicMaterial({
             color: this.colors.globe,
             transparent: true,
-            opacity: 0.5,
+            // opacity: 0.5,
+            opacity: 0.03,
+            // opacity: 1,
           }),
       )
 
@@ -657,7 +726,7 @@ export class Globe {
       2,
     )
 
-    if (this.props.debug) {
+    if (this.props.debug && this.props.enableLights) {
       this.addLightGui(spotLight1, 'spotLight1')
       this.addLightGui(spotLight2, 'spotLight2')
       this.addLightGui(spotLight3, 'spotLight3')
@@ -677,6 +746,23 @@ export class Globe {
       }
 
       const startLocation = data[startIndex]
+      // const startLocation = {
+      //   "country": "Philippines",
+      //   "region": "Manila",
+      //   "city": "Manila",
+      //   "lat": 14.6,
+      //   "long": 120.9833,
+      //   "population": 23088000
+      // }
+      // const startLocation = {
+      //   "country": "South Africa",
+      //   "region": "Gauteng",
+      //   "city": "Johannesburg",
+      //   "lat": -26.2044,
+      //   "long": 28.0416,
+      //   "population": 4434827
+      // }
+
       const endLocation = data[endIndex]
 
       return {
@@ -697,10 +783,12 @@ export class Globe {
           (v) => v.group.name === pathData[intervalCount].label,
         ) > -1
 
-      if (!alreadyExists && this.pathMap.size < this.maxPaths) {
+      if (!alreadyExists && this.pathMap.size < this.config.maxLines) {
         const path = new Path(
           pathData[intervalCount],
+          this.colors.paths[Math.floor(Math.random() * this.colors.paths.length)],
           this.globeRadius,
+          this.config.arcHeight,
           (uuid) => this.pathMap.delete(uuid),
         )
         this.pathMap.set(path.uuid, path)
@@ -712,53 +800,55 @@ export class Globe {
   update = () => {
     this.pathMap.forEach((mesh) => mesh.update())
 
-    this.raycaster.setFromCamera(this.mouse, this.camera)
-    const intersects = this.raycaster.intersectObjects(this.group.children)
+    this.group.rotateY(0.1 * DEG2RAD)
 
-    if (intersects.length > 0) {
-      const parent = intersects[0]?.object?.parent
-      if (
-        intersects[0].object !== this.intersected?.object &&
-        this.currentPath
-      ) {
-        this.props.canvas.style.cursor = ''
-        this.currentPath.setIsHover(false)
-      }
+    // this.raycaster.setFromCamera(this.mouse, this.camera)
+    // const intersects = this.raycaster.intersectObjects(this.group.children)
 
-      if (parent.name) {
-        if (parent.uuid !== this.currentPath?.group?.uuid) {
-          this.currentPath = this.pathMap.get(parent.uuid)
-          this.dataDisplay.setData(this.currentPath?.data)
-        }
-        if (this.currentPath) {
-          this.props.canvas.style.cursor = 'pointer'
-          this.currentPath.setIsHover(true)
-        }
-      }
-
-      this.intersected = intersects[0]
-
-      if (parent.name) {
-        this.dataDisplay.show()
-        this.dataDisplay.update(this.screenMouse)
-      } else {
-        this.dataDisplay.hide()
-      }
-    }
-
-    if (
-      intersects.length === 0 ||
-      !this.intersected ||
-      !this.intersected?.object?.parent?.name
-    ) {
-      if (this.currentPath) {
-        this.props.canvas.style.cursor = ''
-        this.currentPath.setIsHover(false)
-      }
-      this.dataDisplay.hide()
-
-      this.group.rotateY(0.1 * DEG2RAD)
-    }
+    // if (intersects.length > 0) {
+    //   const parent = intersects[0]?.object?.parent
+    //   if (
+    //     intersects[0].object !== this.intersected?.object &&
+    //     this.currentPath
+    //   ) {
+    //     this.props.canvas.style.cursor = ''
+    //     this.currentPath.setIsHover(false)
+    //   }
+    //
+    //   if (parent.name) {
+    //     if (parent.uuid !== this.currentPath?.group?.uuid) {
+    //       this.currentPath = this.pathMap.get(parent.uuid)
+    //       this.dataDisplay.setData(this.currentPath?.data)
+    //     }
+    //     if (this.currentPath) {
+    //       this.props.canvas.style.cursor = 'pointer'
+    //       this.currentPath.setIsHover(true)
+    //     }
+    //   }
+    //
+    //   this.intersected = intersects[0]
+    //
+    //   if (parent.name) {
+    //     this.dataDisplay.show()
+    //     this.dataDisplay.update(this.screenMouse)
+    //   } else {
+    //     this.dataDisplay.hide()
+    //   }
+    // }
+    //
+    // if (
+    //   intersects.length === 0 ||
+    //   !this.intersected ||
+    //   !this.intersected?.object?.parent?.name
+    // ) {
+    //   if (this.currentPath) {
+    //     this.props.canvas.style.cursor = ''
+    //     this.currentPath.setIsHover(false)
+    //   }
+    //   this.dataDisplay.hide()
+    //
+    //   this.group.rotateY(0.1 * DEG2RAD)
+    // }
   }
 
   renderAnimation = () => {
